@@ -30,4 +30,8 @@ public class Product {
     //상품 기본 판매가
     private BigDecimal basePrice;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
+
 }
