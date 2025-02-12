@@ -1,0 +1,21 @@
+package com.gangnam.wholesale.domain.product;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+@Table(name = "categories")
+@Entity
+public class Category {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    private String name;
+
+    private Long parentId;
+
+}
