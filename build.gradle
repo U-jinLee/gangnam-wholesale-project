@@ -5,7 +5,7 @@ plugins {
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
-group = 'com.example'
+group = 'com.gangnam.wholesale'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -34,7 +34,7 @@ dependencies {
     // guava
     implementation 'com.google.guava:guava:32.1.2-jre'
     // oauth2
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     // mustache
     implementation 'org.springframework.boot:spring-boot-starter-mustache'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
