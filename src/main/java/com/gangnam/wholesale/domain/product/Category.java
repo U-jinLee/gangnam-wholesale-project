@@ -1,6 +1,7 @@
 package com.gangnam.wholesale.domain.product;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,9 @@ public class Category {
 
     private String name;
 
-    private Long parentId;
-
+    @Builder
+    public Category(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
