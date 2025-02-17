@@ -31,7 +31,7 @@ public class AdminProductApiController {
 		return ResponseEntity.ok(result);
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping(ApiMappingAttributes.ID)
 	public ResponseEntity<ProductResponseDto> getProduct(@PathVariable Long id) {
 		ProductResponseDto result = this.productService.getProduct(id);
 		return ResponseEntity.ok(result);

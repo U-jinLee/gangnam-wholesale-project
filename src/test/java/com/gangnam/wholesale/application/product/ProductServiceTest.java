@@ -37,6 +37,9 @@ import com.gangnam.wholesale.global.error.exception.EntityNotFoundException;
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
 
+	private Supplier mockSupplier;
+	private Category mockCategory;
+
 	@InjectMocks
 	private ProductService productService;
 
@@ -56,23 +59,32 @@ class ProductServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		Supplier supplier = Supplier.builder().name("제국주점").build();
-		Category category = Category.builder().name("소주").build();
+		this.mockSupplier = Supplier.builder()
+			.name("제국주점")
+			.build();
+
+		ReflectionTestUtils.setField(this.mockSupplier, "id", 1L);
+
+		this.mockCategory = Category.builder()
+			.name("소주")
+			.build();
+
+		ReflectionTestUtils.setField(this.mockCategory, "id", 1L);
 
 		this.products = List.of(
 			Product.builder()
 				.code("12345")
 				.name("카디안 소주")
 				.description("카디안의 카오스 에너지가 흠뻑 적셔진 소주!")
-				.supplier(supplier)
-				.category(category)
+				.supplier(this.mockSupplier)
+				.category(this.mockCategory)
 				.build(),
 			Product.builder()
 				.code("12346")
 				.name("울트라마 소주")
 				.description("울트라마의 엄격한 정제를 거친 소주")
-				.supplier(supplier)
-				.category(category)
+				.supplier(this.mockSupplier)
+				.category(this.mockCategory)
 				.build()
 		);
 	}
@@ -92,7 +104,6 @@ class ProductServiceTest {
 		assertNotNull(response);
 		assertEquals(this.products.size(), response.getTotalElements());
 		assertEquals(1, response.getTotalPages());
-
 	}
 
 	@Test
@@ -106,28 +117,21 @@ class ProductServiceTest {
 		BigDecimal wholesaleCost = BigDecimal.valueOf(5000);
 		BigDecimal basePrice = BigDecimal.valueOf(10000);
 
-		Supplier mockSupplier = Supplier.builder()
-			.name("제국주류")
-			.build();
-
-		Category mockCategory = Category.builder()
-			.name("소주")
-			.build();
-
 		Product mockProduct = Product.builder()
 			.code(code)
 			.name(name)
 			.description(description)
 			.wholesaleCost(wholesaleCost)
 			.basePrice(basePrice)
-			.supplier(mockSupplier)
-			.category(mockCategory)
+			.supplier(this.mockSupplier)
+			.category(this.mockCategory)
 			.build();
-
 		ReflectionTestUtils.setField(mockProduct, "id", productId);
+
 		//when
 		when(this.productRepository.findById(productId)).thenReturn(Optional.of(mockProduct));
 		ProductResponseDto response = this.productService.getProduct(productId);
+
 		//then
 		assertNotNull(response);
 		assertEquals(productId, response.id());
@@ -156,22 +160,14 @@ class ProductServiceTest {
 			supplierId,
 			categoryId);
 
-		Supplier mockSupplier = Supplier.builder()
-			.name("제국주류")
-			.build();
-
-		Category mockCategory = Category.builder()
-			.name("소주")
-			.build();
-
 		Product mockProduct = Product.builder()
 			.code(code)
 			.name(name)
 			.description(description)
 			.wholesaleCost(wholesaleCost)
 			.basePrice(basePrice)
-			.supplier(mockSupplier)
-			.category(mockCategory)
+			.supplier(this.mockSupplier)
+			.category(this.mockCategory)
 			.build();
 
 		List<CustomerTier> mockCustomerTiers = List.of(
@@ -201,7 +197,7 @@ class ProductServiceTest {
 		});
 
 		//when
-		when(this.supplierRepository.findById(supplierId)).thenReturn(Optional.of(mockSupplier));
+		when(this.supplierRepository.findById(supplierId)).thenReturn(Optional.of(this.mockSupplier));
 		when(this.categoryRepository.findById(categoryId)).thenReturn(Optional.of(mockCategory));
 		when(this.customerTierRepository.findAll()).thenReturn(mockCustomerTiers);
 		when(this.productRepository.save(any(Product.class))).thenReturn(mockProduct);
@@ -269,12 +265,8 @@ class ProductServiceTest {
 			supplierId,
 			categoryId);
 
-		Supplier mockSupplier = Supplier.builder()
-			.name("제국주류")
-			.build();
-
 		//when
-		when(supplierRepository.findById(supplierId)).thenReturn(Optional.of(mockSupplier));
+		when(supplierRepository.findById(supplierId)).thenReturn(Optional.of(this.mockSupplier));
 		when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
 
 		//then
