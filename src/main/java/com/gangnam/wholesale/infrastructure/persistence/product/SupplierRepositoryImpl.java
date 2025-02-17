@@ -1,4 +1,4 @@
-package com.gangnam.wholesale.infrastructure.persistence;
+package com.gangnam.wholesale.infrastructure.persistence.product;
 
 import java.util.Optional;
 

@@ -2,17 +2,25 @@ package com.gangnam.wholesale.application.product;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.gangnam.wholesale.domain.product.Category;
 import com.gangnam.wholesale.domain.product.Product;
@@ -37,6 +45,50 @@ class ProductServiceTest {
 	@Mock
 	CategoryRepository categoryRepository;
 
+	private List<Product> products = new ArrayList<>();
+
+	@BeforeEach
+	void setUp() {
+		Supplier supplier = Supplier.builder().name("제국주점").build();
+		Category category = Category.builder().name("소주").build();
+
+		this.products = List.of(
+			Product.builder()
+				.code("12345")
+				.name("카디안 소주")
+				.description("카디안의 카오스 에너지가 흠뻑 적셔진 소주!")
+				.supplier(supplier)
+				.category(category)
+				.build(),
+			Product.builder()
+				.code("12346")
+				.name("울트라마 소주")
+				.description("울트라마의 엄격한 정제를 거친 소주")
+				.supplier(supplier)
+				.category(category)
+				.build()
+		);
+	}
+
+	@Test
+	@DisplayName("상품 목록을 정상적으로 조회한다.")
+	void getProducts_ShouldReturnPagedProductResponse() {
+		//given
+		PageRequest pageable = PageRequest.of(0, 2, Sort.by("name").ascending());
+
+		PageImpl<Product> mockProductsPage = new PageImpl<>(this.products, pageable, this.products.size());
+
+		//when
+		when(this.productRepository.findAll(any(Pageable.class))).thenReturn(mockProductsPage);
+		Page<ProductResponseDto> response = this.productService.getProducts(pageable);
+		//then
+		assertNotNull(response);
+		assertEquals(this.products.size(), response.getTotalElements());
+		assertEquals(1, response.getTotalPages());
+		System.out.println(response.getContent());
+
+	}
+
 	@Test
 	@DisplayName("새로운 상품을 정상적으로 생성한다.")
 	void createProduct_Success() {
@@ -58,12 +110,10 @@ class ProductServiceTest {
 			categoryId);
 
 		Supplier mockSupplier = Supplier.builder()
-			.id(supplierId)
 			.name("제국주류")
 			.build();
 
 		Category mockCategory = Category.builder()
-			.id(categoryId)
 			.name("소주")
 			.build();
 
@@ -78,9 +128,9 @@ class ProductServiceTest {
 			.build();
 
 		//when
-		Mockito.when(supplierRepository.findById(supplierId)).thenReturn(Optional.of(mockSupplier));
-		Mockito.when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(mockCategory));
-		Mockito.when(productRepository.save(any(Product.class))).thenReturn(mockProduct);
+		when(supplierRepository.findById(supplierId)).thenReturn(Optional.of(mockSupplier));
+		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(mockCategory));
+		when(productRepository.save(any(Product.class))).thenReturn(mockProduct);
 
 		ProductResponseDto response = productService.createProduct(request);
 		//then
@@ -115,7 +165,7 @@ class ProductServiceTest {
 			categoryId);
 
 		//when
-		Mockito.when(supplierRepository.findById(supplierId)).thenReturn(Optional.empty());
+		when(supplierRepository.findById(supplierId)).thenReturn(Optional.empty());
 
 		//then
 		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
@@ -145,14 +195,12 @@ class ProductServiceTest {
 			categoryId);
 
 		Supplier mockSupplier = Supplier.builder()
-			.id(supplierId)
 			.name("제국주류")
 			.build();
 
-
 		//when
-		Mockito.when(supplierRepository.findById(supplierId)).thenReturn(Optional.of(mockSupplier));
-		Mockito.when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+		when(supplierRepository.findById(supplierId)).thenReturn(Optional.of(mockSupplier));
+		when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
 
 		//then
 		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
@@ -160,4 +208,5 @@ class ProductServiceTest {
 		assertNotNull(exception.getMessage());
 
 	}
+
 }

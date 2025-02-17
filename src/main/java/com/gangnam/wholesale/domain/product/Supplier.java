@@ -19,8 +19,7 @@ public class Supplier {
 
 
     @Builder
-    public Supplier(Long id, String name) {
-        this.id = id;
+    public Supplier(String name) {
         this.name = name;
     }
 

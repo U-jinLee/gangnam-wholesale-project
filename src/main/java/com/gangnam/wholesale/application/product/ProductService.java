@@ -1,5 +1,7 @@
 package com.gangnam.wholesale.application.product;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +24,15 @@ public class ProductService {
 	private final SupplierRepository supplierRepository;
 	private final CategoryRepository categoryRepository;
 
+	@Transactional(readOnly = true)
+	public Page<ProductResponseDto> getProducts(Pageable pageable) {
+		return this.productRepository.findAll(pageable).map(ProductMapper::toResponse);
+	}
+
 	@Transactional
 	public ProductResponseDto createProduct(ProductRequestDto request) {
+		// todo: 상품 도메인 로직 구현
+
 		// 공급자 엔티티 찾기
 		Supplier supplier = this.supplierRepository.findById(request.supplierId()).orElseThrow(() ->
 			new EntityNotFoundException("Supplier not found"));
@@ -37,6 +46,8 @@ public class ProductService {
 
 		// 상품 저장
 		Product product = this.productRepository.save(productEntity);
+
+		//todo: 고객 등급에 따른 할인률 적용 로직 구현
 
 		// 상품 응답 DTO 생성
 		return ProductMapper.toResponse(product);
