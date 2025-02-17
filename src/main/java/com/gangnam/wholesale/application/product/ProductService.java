@@ -1,13 +1,18 @@
 package com.gangnam.wholesale.application.product;
 
+import java.math.BigDecimal;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gangnam.wholesale.application.product.mapper.ProductMapper;
+import com.gangnam.wholesale.domain.customer.CustomerTier;
+import com.gangnam.wholesale.domain.customer.repository.CustomerTierRepository;
 import com.gangnam.wholesale.domain.product.Category;
 import com.gangnam.wholesale.domain.product.Product;
+import com.gangnam.wholesale.domain.product.ProductPrice;
 import com.gangnam.wholesale.domain.product.Supplier;
 import com.gangnam.wholesale.domain.product.repository.CategoryRepository;
 import com.gangnam.wholesale.domain.product.repository.ProductRepository;
@@ -23,6 +28,7 @@ public class ProductService {
 	private final ProductRepository productRepository;
 	private final SupplierRepository supplierRepository;
 	private final CategoryRepository categoryRepository;
+	private final CustomerTierRepository customerTierRepository;
 
 	@Transactional(readOnly = true)
 	public Page<ProductResponseDto> getProducts(Pageable pageable) {
@@ -52,13 +58,25 @@ public class ProductService {
 		// 상품 엔티티 생성
 		Product productEntity = ProductMapper.toEntity(request, supplier, category);
 
+		//고객 등급에 따른 할인률 적용 로직 구현
+		this.customerTierRepository.findAll().forEach(tier ->
+			productEntity.addProductPrice(calculateProductPrice(productEntity.getBasePrice(), tier)));
+
 		// 상품 저장
 		Product product = this.productRepository.save(productEntity);
 
-		//todo: 고객 등급에 따른 할인률 적용 로직 구현
-
 		// 상품 응답 DTO 생성
 		return ProductMapper.toResponse(product);
+	}
+
+	private ProductPrice calculateProductPrice(BigDecimal basePrice, CustomerTier tier) {
+		BigDecimal discountPrice = basePrice
+			.multiply(BigDecimal.ONE.subtract(tier.getDiscountRate().divide(BigDecimal.valueOf(100))));
+
+		return ProductPrice.builder()
+			.price(discountPrice)
+			.customerTierId(tier.getId())
+			.build();
 	}
 
 }

@@ -1,6 +1,8 @@
 package com.gangnam.wholesale.domain.product;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,6 +49,9 @@ public class Product {
 	@JoinColumn(name = "category_id")
 	private Category category;
 
+	@OneToMany(mappedBy = "product")
+	private List<ProductPrice> productPrices = new ArrayList<>();
+
 	@Builder
 	public Product(String code,
 		String name,
@@ -62,5 +68,11 @@ public class Product {
 		this.supplier = supplier;
 		this.category = category;
 	}
+
+	public void addProductPrice(ProductPrice productPrice) {
+		this.productPrices.add(productPrice);
+		productPrice.setProduct(this);
+	}
+
 
 }

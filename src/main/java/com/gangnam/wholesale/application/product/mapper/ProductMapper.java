@@ -1,6 +1,9 @@
 package com.gangnam.wholesale.application.product.mapper;
 
+import java.util.List;
+
 import com.gangnam.wholesale.application.product.CategoryResponseDto;
+import com.gangnam.wholesale.application.product.ProductPriceResponseDto;
 import com.gangnam.wholesale.application.product.ProductRequestDto;
 import com.gangnam.wholesale.application.product.ProductResponseDto;
 import com.gangnam.wholesale.application.product.SupplierResponseDto;
@@ -15,6 +18,11 @@ public class ProductMapper {
 	}
 
 	public static ProductResponseDto toResponse(Product product) {
+		List<ProductPriceResponseDto> productPrices = product.getProductPrices()
+			.stream()
+			.map(ProductPriceResponseDto::from)
+			.toList();
+
 		return new ProductResponseDto(
 			product.getId(),
 			product.getCode(),
@@ -23,7 +31,8 @@ public class ProductMapper {
 			product.getWholesaleCost(),
 			product.getBasePrice(),
 			SupplierResponseDto.from(product.getSupplier()),
-			CategoryResponseDto.from(product.getCategory()));
+			CategoryResponseDto.from(product.getCategory()),
+			productPrices);
 	}
 
 	public static Product toEntity(ProductRequestDto request, Supplier supplier, Category category) {

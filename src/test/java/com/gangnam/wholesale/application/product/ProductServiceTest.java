@@ -23,8 +23,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.gangnam.wholesale.domain.customer.CustomerTier;
+import com.gangnam.wholesale.domain.customer.repository.CustomerTierRepository;
 import com.gangnam.wholesale.domain.product.Category;
 import com.gangnam.wholesale.domain.product.Product;
+import com.gangnam.wholesale.domain.product.ProductPrice;
 import com.gangnam.wholesale.domain.product.Supplier;
 import com.gangnam.wholesale.domain.product.repository.CategoryRepository;
 import com.gangnam.wholesale.domain.product.repository.ProductRepository;
@@ -45,6 +48,9 @@ class ProductServiceTest {
 
 	@Mock
 	CategoryRepository categoryRepository;
+
+	@Mock
+	private CustomerTierRepository customerTierRepository;
 
 	private List<Product> products = new ArrayList<>();
 
@@ -168,12 +174,39 @@ class ProductServiceTest {
 			.category(mockCategory)
 			.build();
 
-		//when
-		when(supplierRepository.findById(supplierId)).thenReturn(Optional.of(mockSupplier));
-		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(mockCategory));
-		when(productRepository.save(any(Product.class))).thenReturn(mockProduct);
+		List<CustomerTier> mockCustomerTiers = List.of(
+			CustomerTier.builder()
+				.name("VIP")
+				.discountRate(BigDecimal.valueOf(20))
+				.minimumDeposit(BigDecimal.valueOf(50000000))
+				.build(),
+			CustomerTier.builder()
+				.name("PLATINUM")
+				.discountRate(BigDecimal.valueOf(18))
+				.minimumDeposit(BigDecimal.valueOf(45000000))
+				.build());
 
-		ProductResponseDto response = productService.createProduct(request);
+		mockCustomerTiers.forEach(tier -> {
+			BigDecimal discountRate = BigDecimal.valueOf(1)
+				.subtract(tier.getDiscountRate().divide(BigDecimal.valueOf(100)));
+
+			BigDecimal discountPrice = mockProduct.getBasePrice()
+				.multiply(discountRate);
+
+			ProductPrice productPrice = ProductPrice.builder()
+				.price(discountPrice)
+				.build();
+
+			mockProduct.addProductPrice(productPrice);
+		});
+
+		//when
+		when(this.supplierRepository.findById(supplierId)).thenReturn(Optional.of(mockSupplier));
+		when(this.categoryRepository.findById(categoryId)).thenReturn(Optional.of(mockCategory));
+		when(this.customerTierRepository.findAll()).thenReturn(mockCustomerTiers);
+		when(this.productRepository.save(any(Product.class))).thenReturn(mockProduct);
+
+		ProductResponseDto response = this.productService.createProduct(request);
 		//then
 		assertNotNull(response);
 		assertEquals(code, response.code());
@@ -183,6 +216,7 @@ class ProductServiceTest {
 		assertEquals(basePrice, response.basePrice());
 		assertNotNull(response.supplier());
 		assertNotNull(response.category());
+		assertEquals(mockCustomerTiers.size(), response.productPrices().size());
 	}
 
 	@Test

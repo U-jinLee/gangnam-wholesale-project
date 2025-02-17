@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,4 +31,15 @@ public class ProductPrice {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Builder
+    public ProductPrice(BigDecimal price, Long customerTierId) {
+        this.price = price;
+        this.customerTierId = customerTierId;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+
+        if(!product.getProductPrices().contains(this)) product.getProductPrices().add(this);
+    }
 }
