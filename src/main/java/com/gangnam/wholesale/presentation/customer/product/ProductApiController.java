@@ -1,4 +1,4 @@
-package com.gangnam.wholesale.presentation;
+package com.gangnam.wholesale.presentation.customer.product;
 
 import com.gangnam.wholesale.application.product.ProductService;
 import com.gangnam.wholesale.common.ApiMappingAttributes;

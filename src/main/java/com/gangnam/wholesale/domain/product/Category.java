@@ -17,8 +17,14 @@ public class Category {
 
     private String name;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_category_id")
+    private Category parentCategory;
+
     @Builder
-    public Category(String name) {
+    public Category(String name, Category parentCategory) {
         this.name = name;
+        this.parentCategory = parentCategory;
     }
+
 }

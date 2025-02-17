@@ -16,8 +16,18 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	private final SpringDataJpaCategoryRepository jpaCategoryRepository;
 
 	@Override
+	public Category save(Category category) {
+		return this.jpaCategoryRepository.save(category);
+	}
+
+	@Override
 	public Optional<Category> findById(Long id) {
 		return this.jpaCategoryRepository.findById(id);
+	}
+
+	@Override
+	public Optional<Category> findByName(String name) {
+		return this.jpaCategoryRepository.findByName(name);
 	}
 
 }
