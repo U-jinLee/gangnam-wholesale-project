@@ -29,6 +29,14 @@ public class ProductService {
 		return this.productRepository.findAll(pageable).map(ProductMapper::toResponse);
 	}
 
+	@Transactional(readOnly = true)
+	public ProductResponseDto getProduct(Long id) {
+		Product product = this.productRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException("Product not found" + id));
+
+		return ProductMapper.toResponse(product);
+	}
+
 	@Transactional
 	public ProductResponseDto createProduct(ProductRequestDto request) {
 		// todo: 상품 도메인 로직 구현

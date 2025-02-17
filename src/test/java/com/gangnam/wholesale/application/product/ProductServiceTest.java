@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.gangnam.wholesale.domain.product.Category;
 import com.gangnam.wholesale.domain.product.Product;
@@ -85,8 +86,48 @@ class ProductServiceTest {
 		assertNotNull(response);
 		assertEquals(this.products.size(), response.getTotalElements());
 		assertEquals(1, response.getTotalPages());
-		System.out.println(response.getContent());
 
+	}
+
+	@Test
+	@DisplayName("상품 상세 정보를 정상적으로 가져온다.")
+	void getProduct() {
+		//given
+		Long productId = 1L;
+		String code = "12345";
+		String name = "강남소주";
+		String description = "강남인을 위한 15도 증류주";
+		BigDecimal wholesaleCost = BigDecimal.valueOf(5000);
+		BigDecimal basePrice = BigDecimal.valueOf(10000);
+
+		Supplier mockSupplier = Supplier.builder()
+			.name("제국주류")
+			.build();
+
+		Category mockCategory = Category.builder()
+			.name("소주")
+			.build();
+
+		Product mockProduct = Product.builder()
+			.code(code)
+			.name(name)
+			.description(description)
+			.wholesaleCost(wholesaleCost)
+			.basePrice(basePrice)
+			.supplier(mockSupplier)
+			.category(mockCategory)
+			.build();
+
+		ReflectionTestUtils.setField(mockProduct, "id", productId);
+		//when
+		when(this.productRepository.findById(productId)).thenReturn(Optional.of(mockProduct));
+		ProductResponseDto response = this.productService.getProduct(productId);
+		//then
+		assertNotNull(response);
+		assertEquals(productId, response.id());
+		assertEquals(code, response.code());
+
+		verify(productRepository, times(1)).findById(1L);
 	}
 
 	@Test
