@@ -4,7 +4,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gangnam.wholesale.common.model.DeleteStatus;
+import com.gangnam.wholesale.global.entity.BaseTimeEntity;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,7 +28,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Table(name = "products")
 @Entity
-public class Product {
+public class Product extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +47,9 @@ public class Product {
 
 	//상품 기본 판매가
 	private BigDecimal basePrice;
+
+	@Enumerated(EnumType.STRING)
+	private DeleteStatus deleteStatus;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "supplier_id")
@@ -67,6 +75,7 @@ public class Product {
 		this.description = description;
 		this.wholesaleCost = wholesaleCost;
 		this.basePrice = basePrice;
+		this.deleteStatus = DeleteStatus.DEFAULT;
 		this.supplier = supplier;
 		this.category = category;
 	}
@@ -74,6 +83,10 @@ public class Product {
 	public void addProductPrice(ProductPrice productPrice) {
 		this.productPrices.add(productPrice);
 		productPrice.setProduct(this);
+	}
+
+	public void delete() {
+		this.deleteStatus = DeleteStatus.DELETED;
 	}
 
 

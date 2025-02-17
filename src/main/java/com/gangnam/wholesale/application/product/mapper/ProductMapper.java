@@ -28,11 +28,14 @@ public class ProductMapper {
 			product.getCode(),
 			product.getName(),
 			product.getDescription(),
+			product.getImageUrl(),
 			product.getWholesaleCost(),
 			product.getBasePrice(),
 			SupplierResponseDto.from(product.getSupplier()),
 			CategoryResponseDto.from(product.getCategory()),
-			productPrices);
+			productPrices,
+			product.getCreatedAt(),
+			product.getModifiedAt());
 	}
 
 	public static Product toEntity(ProductRequestDto request, Supplier supplier, Category category) {

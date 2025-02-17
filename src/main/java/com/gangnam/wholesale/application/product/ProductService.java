@@ -79,4 +79,10 @@ public class ProductService {
 			.build();
 	}
 
+	@Transactional
+	public void deleteProduct(Long id) {
+		this.productRepository.findById(id).orElseThrow(() ->
+			new EntityNotFoundException("Product not found" + id)).delete();
+	}
+
 }
