@@ -49,4 +49,27 @@ class CategoryServiceTest {
 		assertNotNull(response);
 		assertEquals(categoryName, response.name());
 	}
+
+	@Test
+	@DisplayName("부모 카테고리에 하위 카테고리를 정상적으로 추가한다")
+	void addSubCategory_Success() {
+		//given
+		long categoryId = 1L;
+		Category mockParentCategory = Category.builder()
+			.name("와인")
+			.build();
+
+		ReflectionTestUtils.setField(mockParentCategory, "id", categoryId);
+
+		CategoryRequestDto request = new CategoryRequestDto("레드와인");
+
+		//when
+		when(this.categoryRepository.findById(categoryId)).thenReturn(Optional.of(mockParentCategory));
+		CategoryResponseDto response = this.categoryService.addSubCategory(categoryId, request);
+
+		//then
+		assertNotNull(response);
+		System.out.println(response);
+
+	}
 }

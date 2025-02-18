@@ -2,6 +2,7 @@ package com.gangnam.wholesale.presentation.admin.product;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,13 @@ public class AdminCategoryApiController {
 	public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody CategoryRequestDto request) {
 		CategoryResponseDto result = this.categoryService.createCategory(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(result);
+	}
+
+	@PostMapping(ApiMappingAttributes.SUB_CATEGORY_API)
+	public ResponseEntity<CategoryResponseDto> addSubCategory(@PathVariable Long id,
+		@RequestBody CategoryRequestDto request) {
+		CategoryResponseDto result = this.categoryService.addSubCategory(id, request);
+		return ResponseEntity.ok(result);
 	}
 
 }

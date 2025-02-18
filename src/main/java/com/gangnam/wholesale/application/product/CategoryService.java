@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gangnam.wholesale.application.product.mapper.CategoryMapper;
 import com.gangnam.wholesale.domain.product.Category;
 import com.gangnam.wholesale.domain.product.repository.CategoryRepository;
+import com.gangnam.wholesale.global.error.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +23,19 @@ public class CategoryService {
 			throw new IllegalArgumentException("Category name already exists");
 
 		Category category = this.categoryRepository.save(CategoryMapper.toEntity(request));
+
+		return CategoryMapper.toResponse(category);
+	}
+
+	@Transactional
+	public CategoryResponseDto addSubCategory(Long id, CategoryRequestDto request) {
+
+		Category category = this.categoryRepository.findById(id).orElseThrow(() ->
+			new EntityNotFoundException("Category not found"));
+
+		Category categoryEntity = CategoryMapper.toEntity(request);
+
+		category.addSubCategory(categoryEntity);
 
 		return CategoryMapper.toResponse(category);
 	}
