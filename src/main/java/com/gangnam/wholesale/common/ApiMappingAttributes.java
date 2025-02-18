@@ -6,6 +6,8 @@ public class ApiMappingAttributes {
 		throw new IllegalStateException("Utility class");
 	}
 
+	public static final String ADMIN_CUSTOMER_API = "/admin/api/customers";
+
 	public static final String ADMIN_PRODUCT_API = "/admin/api/products";
 	public static final String PRODUCT_API = "/api/products";
 
