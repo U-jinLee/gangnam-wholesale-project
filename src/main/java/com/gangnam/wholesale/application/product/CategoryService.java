@@ -1,5 +1,7 @@
 package com.gangnam.wholesale.application.product;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,5 +40,10 @@ public class CategoryService {
 		category.addSubCategory(categoryEntity);
 
 		return CategoryMapper.toResponse(category);
+	}
+
+	@Transactional(readOnly = true)
+	public List<CategoryResponseDto> getCategories() {
+		return this.categoryRepository.findByRootCategories().stream().map(CategoryMapper::toResponse).toList();
 	}
 }

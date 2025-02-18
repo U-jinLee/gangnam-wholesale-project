@@ -32,7 +32,7 @@ public class AdminCategoryApiController {
 	public ResponseEntity<CategoryResponseDto> addSubCategory(@PathVariable Long id,
 		@RequestBody CategoryRequestDto request) {
 		CategoryResponseDto result = this.categoryService.addSubCategory(id, request);
-		return ResponseEntity.ok(result);
+		return ResponseEntity.status(HttpStatus.CREATED).body(result);
 	}
 
 }

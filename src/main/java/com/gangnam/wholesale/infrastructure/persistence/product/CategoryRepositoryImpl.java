@@ -1,5 +1,6 @@
 package com.gangnam.wholesale.infrastructure.persistence.product;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
@@ -28,6 +29,11 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	@Override
 	public Optional<Category> findByName(String name) {
 		return this.jpaCategoryRepository.findByName(name);
+	}
+
+	@Override
+	public List<Category> findByRootCategories() {
+		return this.jpaCategoryRepository.findAllByParentCategoryIsNull();
 	}
 
 }
