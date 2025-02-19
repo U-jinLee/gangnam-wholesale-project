@@ -17,7 +17,12 @@ public class DepositAccountRepositoryImpl implements DepositAccountRepository {
 
 	@Override
 	public List<DepositAccount> saveAll(List<DepositAccount> depositAccounts) {
-		return jpaDepositAccountRepository.saveAll(depositAccounts);
+		return this.jpaDepositAccountRepository.saveAll(depositAccounts);
+	}
+
+	@Override
+	public List<DepositAccount> findByCustomerId(Long customerId) {
+		return this.jpaDepositAccountRepository.findByCustomerId(customerId);
 	}
 
 }

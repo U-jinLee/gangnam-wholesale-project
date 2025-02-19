@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,31 @@ class CustomerServiceTest {
 	private DepositAccountRepository depositAccountRepository;
 
 	@Test
+	@DisplayName("고객을 정상적으로 조회한다.")
+	void getCustomer_Success() {
+		//given
+		String email = "test@test.com";
+		String password = "12345";
+		String registrationNumber = "111-11-11111";
+
+		long customerId = 1L;
+		Customer mockCustomer = Customer.builder()
+			.email(email)
+			.password(password)
+			.registrationNumber(registrationNumber)
+			.build();
+		ReflectionTestUtils.setField(mockCustomer, "id", customerId);
+		List<DepositAccount> mockDepositAccounts = DepositAccount.createDepositAccounts(customerId);
+		//when
+		when(this.customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+		when(this.depositAccountRepository.findByCustomerId(customerId)).thenReturn(mockDepositAccounts);
+		CustomerResponseDto response = this.customerService.getCustomer(customerId);
+		//then
+		assertNotNull(response);
+		System.out.println(response);
+	}
+
+	@Test
 	@DisplayName("고객을 정상적으로 생성한다.")
 	void createCustomer_Success() {
 		//given
@@ -62,4 +88,5 @@ class CustomerServiceTest {
 		assertEquals(registrationNumber, response.registrationNumber());
 		assertEquals(mockDepositAccounts.size(), response.depositAccounts().size());
 	}
+
 }

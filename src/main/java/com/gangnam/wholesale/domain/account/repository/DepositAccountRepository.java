@@ -6,4 +6,5 @@ import com.gangnam.wholesale.domain.account.DepositAccount;
 
 public interface DepositAccountRepository {
 	List<DepositAccount> saveAll(List<DepositAccount> depositAccounts);
+	List<DepositAccount> findByCustomerId(Long customerId);
 }

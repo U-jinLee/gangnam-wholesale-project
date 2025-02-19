@@ -25,4 +25,9 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 		return this.jpaCustomerRepository.findByEmail(email);
 	}
 
+	@Override
+	public Optional<Customer> findById(Long id) {
+		return this.jpaCustomerRepository.findById(id);
+	}
+
 }

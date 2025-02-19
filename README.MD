@@ -45,6 +45,7 @@ Spring Skeleton Project
 >      2. 하위 카테고리 등록
 >    - 회원
 >      1. 회원 등록
+>      2. 회원 상세 조회하기
 
 <br/>
 

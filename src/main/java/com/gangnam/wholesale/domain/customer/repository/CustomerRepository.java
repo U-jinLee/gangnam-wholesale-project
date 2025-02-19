@@ -7,4 +7,5 @@ import com.gangnam.wholesale.domain.customer.Customer;
 public interface CustomerRepository {
 	Customer save(Customer customer);
 	Optional<Customer> findByEmail(String email);
+	Optional<Customer> findById(Long id);
 }
