@@ -10,7 +10,10 @@ import com.gangnam.wholesale.application.customer.mapper.CustomerMapper;
 import com.gangnam.wholesale.domain.account.DepositAccount;
 import com.gangnam.wholesale.domain.account.repository.DepositAccountRepository;
 import com.gangnam.wholesale.domain.customer.Customer;
+import com.gangnam.wholesale.domain.customer.CustomerTier;
+import com.gangnam.wholesale.domain.customer.TierName;
 import com.gangnam.wholesale.domain.customer.repository.CustomerRepository;
+import com.gangnam.wholesale.domain.customer.repository.CustomerTierRepository;
 import com.gangnam.wholesale.global.error.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -22,11 +25,16 @@ public class CustomerService {
 	private final PasswordEncoder passwordEncode;
 	private final CustomerRepository customerRepository;
 	private final DepositAccountRepository depositAccountRepository;
+	private final CustomerTierRepository customerTierRepository;
 
 	@Transactional
 	public CustomerResponseDto createCustomer(CustomerRequestDto request) {
 
-		Customer customerEntity = CustomerMapper.toEntity(request, this.passwordEncode.encode(request.password()));
+		CustomerTier customerTier = this.customerTierRepository.findByTierName(TierName.BRONZE)
+			.orElseThrow(() -> new EntityNotFoundException("Customer tier not found"));
+
+		Customer customerEntity = CustomerMapper.toEntity(request, this.passwordEncode.encode(request.password()),
+			customerTier);
 
 		Customer customer = this.customerRepository.save(customerEntity);
 

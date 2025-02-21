@@ -7,6 +7,7 @@ import com.gangnam.wholesale.application.customer.CustomerRequestDto;
 import com.gangnam.wholesale.application.customer.CustomerResponseDto;
 import com.gangnam.wholesale.domain.account.DepositAccount;
 import com.gangnam.wholesale.domain.customer.Customer;
+import com.gangnam.wholesale.domain.customer.CustomerTier;
 
 public class CustomerMapper {
 
@@ -22,11 +23,12 @@ public class CustomerMapper {
 			customer.getCreatedAt(), customer.getModifiedAt(), accountResponses);
 	}
 
-	public static Customer toEntity(CustomerRequestDto request, String encodedPassword) {
+	public static Customer toEntity(CustomerRequestDto request, String encodedPassword, CustomerTier customerTier) {
 		return Customer.builder()
 			.email(request.email())
 			.password(encodedPassword)
 			.registrationNumber(request.registrationNumber())
+			.customerTier(customerTier)
 			.build();
 	}
 

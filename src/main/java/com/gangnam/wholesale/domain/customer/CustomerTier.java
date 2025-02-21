@@ -3,6 +3,8 @@ package com.gangnam.wholesale.domain.customer;
 import java.math.BigDecimal;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,7 +23,8 @@ public class CustomerTier {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	private String name;
+	@Enumerated(EnumType.STRING)
+	private TierName tierName;
 
 	private BigDecimal minimumDeposit;
 
@@ -32,9 +35,9 @@ public class CustomerTier {
 	private String description;
 
 	@Builder
-	public CustomerTier(String name, BigDecimal minimumDeposit, BigDecimal discountRate, Integer priority,
+	public CustomerTier(TierName tierName, BigDecimal minimumDeposit, BigDecimal discountRate, Integer priority,
 		String description) {
-		this.name = name;
+		this.tierName = tierName;
 		this.minimumDeposit = minimumDeposit;
 		this.discountRate = discountRate;
 		this.priority = priority;

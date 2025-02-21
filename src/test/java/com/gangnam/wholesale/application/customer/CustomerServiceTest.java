@@ -3,6 +3,7 @@ package com.gangnam.wholesale.application.customer;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +19,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.gangnam.wholesale.domain.account.DepositAccount;
 import com.gangnam.wholesale.domain.account.repository.DepositAccountRepository;
 import com.gangnam.wholesale.domain.customer.Customer;
+import com.gangnam.wholesale.domain.customer.CustomerTier;
+import com.gangnam.wholesale.domain.customer.TierName;
 import com.gangnam.wholesale.domain.customer.repository.CustomerRepository;
+import com.gangnam.wholesale.domain.customer.repository.CustomerTierRepository;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerServiceTest {
@@ -33,6 +37,9 @@ class CustomerServiceTest {
 
 	@Mock
 	private DepositAccountRepository depositAccountRepository;
+
+	@Mock
+	private CustomerTierRepository customerTierRepository;
 
 	@Test
 	@DisplayName("고객을 정상적으로 조회한다.")
@@ -56,7 +63,7 @@ class CustomerServiceTest {
 		CustomerResponseDto response = this.customerService.getCustomer(customerId);
 		//then
 		assertNotNull(response);
-		System.out.println(response);
+
 	}
 
 	@Test
@@ -69,17 +76,27 @@ class CustomerServiceTest {
 
 		CustomerRequestDto request = new CustomerRequestDto(email, password, registrationNumber);
 		long customerId = 1L;
+
 		Customer mockCustomer = Customer.builder()
 			.email(email)
 			.password(password)
 			.registrationNumber(registrationNumber)
 			.build();
+
+		CustomerTier mockCustomerTier = CustomerTier.builder()
+			.tierName(TierName.BRONZE)
+			.minimumDeposit(BigDecimal.valueOf(0L))
+			.discountRate(BigDecimal.valueOf(0L))
+			.build();
+
 		ReflectionTestUtils.setField(mockCustomer, "id", customerId);
 		List<DepositAccount> mockDepositAccounts = DepositAccount.createDepositAccounts(customerId);
 		//when
 		when(this.passwordEncoder.encode(anyString())).thenReturn(password);
 		when(this.customerRepository.save(any(Customer.class))).thenReturn(mockCustomer);
 		when(this.depositAccountRepository.saveAll(any(List.class))).thenReturn(mockDepositAccounts);
+		when(this.customerTierRepository.findByTierName(TierName.BRONZE)).thenReturn(
+			Optional.ofNullable(mockCustomerTier));
 		CustomerResponseDto response = this.customerService.createCustomer(request);
 		//then
 		assertNotNull(response);
@@ -87,6 +104,7 @@ class CustomerServiceTest {
 		assertEquals(email, response.email());
 		assertEquals(registrationNumber, response.registrationNumber());
 		assertEquals(mockDepositAccounts.size(), response.depositAccounts().size());
+
 	}
 
 }

@@ -24,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.gangnam.wholesale.domain.customer.CustomerTier;
+import com.gangnam.wholesale.domain.customer.TierName;
 import com.gangnam.wholesale.domain.customer.repository.CustomerTierRepository;
 import com.gangnam.wholesale.domain.product.Category;
 import com.gangnam.wholesale.domain.product.Product;
@@ -172,12 +173,12 @@ class ProductServiceTest {
 
 		List<CustomerTier> mockCustomerTiers = List.of(
 			CustomerTier.builder()
-				.name("VIP")
+				.tierName(TierName.VIP)
 				.discountRate(BigDecimal.valueOf(20))
 				.minimumDeposit(BigDecimal.valueOf(50000000))
 				.build(),
 			CustomerTier.builder()
-				.name("PLATINUM")
+				.tierName(TierName.PLATINUM)
 				.discountRate(BigDecimal.valueOf(18))
 				.minimumDeposit(BigDecimal.valueOf(45000000))
 				.build());
